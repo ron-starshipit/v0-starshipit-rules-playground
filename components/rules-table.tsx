@@ -25,9 +25,9 @@ import { cn } from "@/lib/utils"
 interface RulesTableProps {
   rules: Rule[]
   matchedRules: Set<number>
-  accounts: { id: number; name: string }[]
-  selectedAccount: number
-  onAccountChange: (accountId: number) => void
+  accounts: { id: number | string; name: string }[]
+  selectedAccount: number | string
+  onAccountChange: (accountId: number | string) => void
   apiKey: string
   subscriptionKey: string
   onApiKeyChange: (key: string) => void
@@ -169,7 +169,7 @@ export function RulesTable({
                     </Label>
                     <Select
                       value={selectedAccount.toString()}
-                      onValueChange={(value) => onAccountChange(Number(value))}
+                      onValueChange={(value) => onAccountChange(value === "parent" ? value : Number(value))}
                     >
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue />
@@ -249,7 +249,7 @@ export function RulesTable({
                         </Label>
                         <Select
                           value={selectedAccount.toString()}
-                          onValueChange={(value) => onAccountChange(Number(value))}
+                          onValueChange={(value) => onAccountChange(value === "parent" ? value : Number(value))}
                         >
                           <SelectTrigger className="h-8 text-xs">
                             <SelectValue />
