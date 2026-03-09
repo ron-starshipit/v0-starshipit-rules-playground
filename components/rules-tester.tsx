@@ -514,11 +514,20 @@ function checkCondition(whereKey: string, condition: string, valueToFind: string
     return false
   }
 
+  // Handle semicolon-separated values as OR conditions
+  const valuesToCheck = valueToFind.includes(";")
+    ? valueToFind.split(";").map((v) => v.trim())
+    : [valueToFind]
+
   switch (condition) {
     case "Is":
-      return orderValue === valueToFind
+      return valuesToCheck.some((val) => orderValue === val)
     case "Contains":
-      return orderValue?.toLowerCase().includes(valueToFind.toLowerCase())
+      return valuesToCheck.some((val) => orderValue?.toLowerCase().includes(val.toLowerCase()))
+    case "StartsWith":
+      return valuesToCheck.some((val) => orderValue?.toLowerCase().startsWith(val.toLowerCase()))
+    case "EndsWith":
+      return valuesToCheck.some((val) => orderValue?.toLowerCase().endsWith(val.toLowerCase()))
     case "Greater Than":
       return Number.parseFloat(orderValue) > Number.parseFloat(valueToFind)
     case "Between":
@@ -559,6 +568,10 @@ function formatActionValue(setKey: string, setValue: string): string {
       return parsed.ProductCode
     }
     if (Array.isArray(parsed)) {
+      if (parsed.length > 0 && typeof parsed[0] === "object" && parsed[0].Key) {
+        // Concatenate Key-Value pairs like "Australia Post - 7H05"
+        return parsed.map((p: any) => `${p.Key} - ${p.Value}`).join(", ")
+      }
       return parsed.map((p: any) => p.Key || p).join(", ")
     }
   } catch {

@@ -25,9 +25,9 @@ import { cn } from "@/lib/utils"
 interface RulesTableProps {
   rules: Rule[]
   matchedRules: Set<number>
-  accounts: { id: number; name: string }[]
-  selectedAccount: number
-  onAccountChange: (accountId: number) => void
+  accounts: { id: number | string; name: string }[]
+  selectedAccount: number | string
+  onAccountChange: (accountId: number | string) => void
   apiKey: string
   subscriptionKey: string
   onApiKeyChange: (key: string) => void
@@ -96,11 +96,11 @@ export function RulesTable({
       <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={handleExpandAll} className="h-7 text-xs">
-            <ChevronsDownUp className="h-3.5 w-3.5 mr-1.5" />
+            <ChevronsUpDown className="h-3.5 w-3.5 mr-1.5" />
             Expand All
           </Button>
           <Button variant="ghost" size="sm" onClick={handleCollapseAll} className="h-7 text-xs">
-            <ChevronsUpDown className="h-3.5 w-3.5 mr-1.5" />
+            <ChevronsDownUp className="h-3.5 w-3.5 mr-1.5" />
             Collapse All
           </Button>
           <Button
@@ -169,7 +169,7 @@ export function RulesTable({
                     </Label>
                     <Select
                       value={selectedAccount.toString()}
-                      onValueChange={(value) => onAccountChange(Number(value))}
+                      onValueChange={(value) => onAccountChange(value === "parent" ? value : Number(value))}
                     >
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue />
@@ -249,7 +249,7 @@ export function RulesTable({
                         </Label>
                         <Select
                           value={selectedAccount.toString()}
-                          onValueChange={(value) => onAccountChange(Number(value))}
+                          onValueChange={(value) => onAccountChange(value === "parent" ? value : Number(value))}
                         >
                           <SelectTrigger className="h-8 text-xs">
                             <SelectValue />
@@ -492,7 +492,8 @@ function formatActionValue(setKey: string, setValue: string): string {
     }
     if (Array.isArray(parsed)) {
       if (parsed.length > 0 && typeof parsed[0] === "object" && parsed[0].Key) {
-        return parsed.map((p: any) => p.Key).join(", ")
+        // Concatenate Key-Value pairs like "Australia Post - 7H05"
+        return parsed.map((p: any) => `${p.Key} - ${p.Value}`).join(", ")
       }
       return parsed.join(", ")
     }
