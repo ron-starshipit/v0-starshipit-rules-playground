@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   console.log("[v0] Rules API: Fetching rules from Starshipit")
 
   try {
-    const response = await fetch("https://store.starshipit.com/api/rules", {
+    const response = await fetch("https://store.starshipit.com/api/rules/storemanagement", {
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
